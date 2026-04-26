@@ -1,6 +1,6 @@
 --- a/public/scripts/chats.js
 +++ b/public/scripts/chats.js
-@@ -1908,6 +1908,14 @@
+@@ -1901,6 +1901,14 @@ export function addDOMPurifyHooks() {
              node.setAttribute('target', '_blank');
              node.setAttribute('rel', 'noopener');
          }
