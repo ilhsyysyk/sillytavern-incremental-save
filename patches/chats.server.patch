@@ -1,9 +1,9 @@
 --- a/src/endpoints/chats.js
 +++ b/src/endpoints/chats.js
-@@ -491,6 +491,94 @@
+@@ -491,6 +491,94 @@ router.post('/save', validateAvatarUrlMiddleware, async function (request, resp
  });
  
- /**
++/**
 + * Counts the number of lines in a file efficiently using streaming.
 + * @param {string} filePath Path to the file
 + * @returns {Promise<number>} Number of lines in the file
@@ -91,11 +91,10 @@
 +    }
 +});
 +
-+/**
+ /**
   * Gets the chat as an object.
   * @param {string} chatFilePath The full chat file path.
-  * @returns {Array}} If the chatFilePath cannot be read, this will return [].
-@@ -851,6 +939,36 @@
+@@ -851,6 +939,36 @@ router.post('/group/save', async function (request, response) {
      }
  });
  
