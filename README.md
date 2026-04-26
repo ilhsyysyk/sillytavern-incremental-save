@@ -77,7 +77,7 @@ SillyTavern 性能优化补丁集，针对大型聊天记录（100MB+、900+ 条
 
 ## 适用版本
 
-- SillyTavern **1.16.0**（`ghcr.io/sillytavern/sillytavern:latest`）
+- SillyTavern **1.17.0**（`ghcr.io/sillytavern/sillytavern:latest`）
 
 ## 安装
 
