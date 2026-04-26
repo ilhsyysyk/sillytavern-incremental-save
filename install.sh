@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# SillyTavern Incremental Save + Image Cache - Installer
+# SillyTavern Incremental Save + Image Cache - Installer for v1.17
 #
 # Applies patches to a running SillyTavern Docker container
 # or a local SillyTavern installation.
