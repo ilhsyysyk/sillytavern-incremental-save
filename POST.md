@@ -74,7 +74,7 @@ SillyTavern 原版的保存逻辑：
 Docker 用户：
 ```bash
 git clone https://github.com/ransxd/sillytavern-incremental-save.git
-cd sillytavern-incremental-save
+cd sillytavern-incremental-save/1.8
 ./install.sh --docker sillytavern
 ```
 脚本自动备份原文件 → 打补丁 → 重启容器，全程无脑。
@@ -82,7 +82,7 @@ cd sillytavern-incremental-save
 本地部署用户：
 ```bash
 git clone https://github.com/ransxd/sillytavern-incremental-save.git
-cd sillytavern-incremental-save
+cd sillytavern-incremental-save/1.8
 ./install.sh --local /你的SillyTavern路径
 ```
 打完补丁手动重启即可。
@@ -109,8 +109,8 @@ Console 里还会打印 `Incremental save: appending N new message(s)` 日志。
 
 📋 【技术细节】
 
-适用版本：SillyTavern 1.16.0
-修改文件：3 个（服务端 1 个 + 前端 2 个）
+适用版本：SillyTavern 1.18.0
+修改文件：6 个（服务端 2 个 + 前端 4 个）
 实现方式：patch 补丁，不侵入原始代码仓库
 
 为什么不做成扩展/插件？

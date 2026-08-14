@@ -2,16 +2,17 @@
 +++ b/public/script.js
 @@ -72,6 +72,7 @@ import {
      getGroupBlock,
-     getGroupCharactersLazy,
+     getGroupCharacterCardsLazy,
      getGroupDepthPrompts,
 +    resetGroupIncrementalSaveState,
  } from './scripts/group-chats.js';
  
  import {
-@@ -388,6 +389,66 @@ export let swipeState = SWIPE_STATE.NONE;
+@@ -415,6 +416,66 @@ export let chat = [];
+ export let swipeState = SWIPE_STATE.NONE;
  let chatSaveTimeout;
  let importFlashTimeout;
- 
++
 +// Image proxy: intercept Image.src setter to route external images through the caching proxy
 +(function installImageProxyInterceptor() {
 +    const descriptor = Object.getOwnPropertyDescriptor(HTMLImageElement.prototype, 'src');
@@ -74,29 +75,28 @@
  export let isChatSaving = false;
  let firstRun = false;
  export let settingsReady = false;
-@@ -9303,7 +9364,12 @@ export async function saveChatConditional() {
-         saveItemizedPrompts(getCurrentChatId());
-     } catch (error) {
-         console.error('Error saving chat', error);
-     } finally {
-         isChatSaving = false;
-     }
-+
-+    // Reset incremental save tracking when chat data is cleared
+@@ -1599,7 +1660,12 @@ export async function clearChat({ clearData = false } = {}) {
+     await saveItemizedPrompts(getCurrentChatId());
+     itemizedPrompts.length = 0;
+ 
+-    if (clearData) chat.length = 0;
 +    if (clearData) {
++        chat.length = 0;
++        // Reset incremental save tracking when chat data is cleared
 +        resetIncrementalSaveState();
 +        resetGroupIncrementalSaveState();
 +    }
  }
  
  export async function deleteLastMessage() {
-@@ -7330,6 +7386,50 @@ export async function saveChat({ chatName, withMetadata, mesId, force = false, c
+@@ -7373,6 +7439,51 @@ export async function saveChat({ chatName, withMetadata, mesId, force = false, c
      };
  
      try {
-+        // ==== Incremental save check ====
++        // ===== Incremental save check =====
 +        const isSameChat = (
 +            !force &&
++            chatData === undefined &&
 +            mesId === undefined &&
 +            fileName === lastSavedChatName &&
 +            lastSavedChatLength > 0
@@ -120,10 +120,10 @@
 +                cache: 'no-cache',
 +                headers: getRequestHeaders(),
 +                body: JSON.stringify({
-+                    avatar_url: characters[this_chid].avatar,
 +                    file_name: fileName,
++                    avatar_url: characters[this_chid].avatar,
 +                    header: chatHeader,
-+                    newMessages,
++                    newMessages: newMessages,
 +                    expectedLines: lastSavedChatLength + 1, // +1 for header line
 +                }),
 +            });
@@ -133,10 +133,22 @@
 +                lastSavedChatHash = computeChatHash(trimmedChat, trimmedChat.length);
 +                return;
 +            }
-+            // If incremental save failed (409 conflict), fall through to full save
++
 +            console.warn('Incremental save failed, falling back to full save');
 +        }
 +
++        // ===== Full save (original logic) =====
          const saveChatRequest = await compressRequest({
              method: 'POST',
              cache: 'no-cache',
+@@ -7388,6 +7499,10 @@ export async function saveChat({ chatName, withMetadata, mesId, force = false, c
+         const result = await fetch('/api/chats/save', saveChatRequest);
+ 
+         if (result.ok) {
++            // Update incremental save tracking after successful full save
++            lastSavedChatName = fileName;
++            lastSavedChatLength = trimmedChat.length;
++            lastSavedChatHash = computeChatHash(trimmedChat, trimmedChat.length);
+             return;
+         }
+ 

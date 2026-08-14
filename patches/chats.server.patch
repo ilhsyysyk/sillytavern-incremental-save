@@ -1,6 +1,7 @@
 --- a/src/endpoints/chats.js
 +++ b/src/endpoints/chats.js
-@@ -491,6 +491,94 @@ router.post('/save', validateAvatarUrlMiddleware, async function (request, resp
+@@ -494,6 +494,97 @@ router.post('/save', validateAvatarUrlMiddleware, async function (request, respo
+     }
  });
  
 +/**
@@ -70,6 +71,9 @@
 +        const cardName = String(request.body.avatar_url).replace('.png', '');
 +        const chatFileName = `${String(request.body.file_name)}.jsonl`;
 +        const chatFilePath = path.join(request.user.directories.chats, cardName, sanitize(chatFileName));
++        if (!isPathUnderParent(request.user.directories.chats, chatFilePath)) {
++            return response.sendStatus(400);
++        }
 +        const { header, newMessages, expectedLines } = request.body;
 +
 +        if (!Array.isArray(newMessages)) {
@@ -94,7 +98,7 @@
  /**
   * Gets the chat as an object.
   * @param {string} chatFilePath The full chat file path.
-@@ -851,6 +939,36 @@ router.post('/group/save', async function (request, response) {
+@@ -871,6 +962,36 @@ router.post('/group/save', async function (request, response) {
      }
  });
  

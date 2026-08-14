@@ -1,15 +1,15 @@
 --- a/public/scripts/tokenizers.js
 +++ b/public/scripts/tokenizers.js
-@@ -795,17 +795,24 @@ export function countTokensOpenAI(messages, full = false) {
+@@ -867,17 +867,24 @@ export async function countTokensOpenAIAsync(messages, full = false) {
          if (typeof cachedCount === 'number') {
              token_count += cachedCount;
          } else {
--            jQuery.ajax({
-+            // Fast estimation: use byte-length approximation (same ratio as server fallback)
+-            const data = await jQuery.ajax({
++            // Fast estimation: use char-based approximation (same ratio as server fallback)
 +            // Real token count will be fetched async and cached for next time
-+            const BYTES_PER_TOKEN = 3.35;
++            const CHARS_PER_TOKEN = 3.35;
 +            const text = typeof message.content === 'string' ? message.content : JSON.stringify(message);
-+            const estimated = Math.ceil(new TextEncoder().encode(text).length / BYTES_PER_TOKEN);
++            const estimated = Math.ceil(text.length / CHARS_PER_TOKEN);
 +            token_count += estimated;
 +
 +            // Async backfill: fetch real token count in background and update cache
@@ -20,11 +20,11 @@
                  data: JSON.stringify([message]),
                  dataType: 'json',
                  contentType: 'application/json',
--                success: function (data) {
--                    token_count += Number(data.token_count);
 +            }).then(data => {
 +                cacheObject[cacheKey] = Number(data.token_count);
              });
+-
+-            token_count += Number(data.token_count);
 -            cacheObject[cacheKey] = Number(data.token_count);
          }
      }
